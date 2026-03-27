@@ -1,0 +1,23 @@
+title: "IT Docs"
+description: "M365, PowerShell & IT-Support Dokumentation"
+baseurl: ""
+url: ""
+
+markdown: kramdown
+highlighter: rouge
+
+kramdown:
+  input: GFM
+  syntax_highlighter: rouge
+  syntax_highlighter_opts:
+    css_class: "highlight"
+    span:
+      line_numbers: false
+    block:
+      line_numbers: false
+
+# Exclude files from build
+exclude:
+  - index-new.html
+  - README.md
+  - .DS_Store
