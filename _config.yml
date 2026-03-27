@@ -1,7 +1,7 @@
 title: "IT Docs"
 description: "M365, PowerShell & IT-Support Dokumentation"
-baseurl: ""
-url: ""
+baseurl: "/m365-support"
+url: "https://fri-ber.github.io"
 
 markdown: kramdown
 highlighter: rouge
