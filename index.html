@@ -4,36 +4,729 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>IT Docs – M365 & PowerShell</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
   <style>
-    body { font-family: Segoe UI, sans-serif; max-width: 900px; margin: 40px auto; padding: 0 20px; }
-    h1 { color: #0078d4; }
-    nav a { margin-right: 20px; color: #0078d4; text-decoration: none; }
-    .card { background: #f3f3f3; padding: 20px; border-radius: 8px; margin: 20px 0; }
-    pre { background: #1e1e1e; color: #d4d4d4; padding: 15px; border-radius: 6px; overflow-x: auto; }
+    :root {
+      --bg: #0d1117;
+      --surface: #161b22;
+      --surface2: #1c2330;
+      --border: #30363d;
+      --blue: #58a6ff;
+      --blue-dim: #1f4068;
+      --green: #3fb950;
+      --orange: #d29922;
+      --purple: #bc8cff;
+      --red: #f85149;
+      --text: #e6edf3;
+      --text-muted: #7d8590;
+      --text-dim: #484f58;
+      --accent: #58a6ff;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Syne', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* GRID BACKGROUND */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(88,166,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(88,166,255,0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* HEADER */
+    header {
+      position: relative;
+      z-index: 10;
+      border-bottom: 1px solid var(--border);
+      background: rgba(13,17,23,0.9);
+      backdrop-filter: blur(12px);
+      padding: 0 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+      position: sticky;
+      top: 0;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 800;
+      font-size: 1.1rem;
+      letter-spacing: -0.02em;
+    }
+
+    .logo-icon {
+      width: 32px;
+      height: 32px;
+      background: linear-gradient(135deg, var(--blue), var(--purple));
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+
+    nav {
+      display: flex;
+      gap: 4px;
+    }
+
+    nav a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.875rem;
+      font-weight: 600;
+      padding: 6px 14px;
+      border-radius: 6px;
+      transition: all 0.2s;
+      letter-spacing: 0.01em;
+    }
+
+    nav a:hover {
+      color: var(--text);
+      background: var(--surface);
+    }
+
+    nav a.active {
+      color: var(--blue);
+      background: var(--blue-dim);
+    }
+
+    /* HERO */
+    .hero {
+      position: relative;
+      z-index: 1;
+      padding: 80px 40px 60px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 4px 14px;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
+      margin-bottom: 24px;
+    }
+
+    .hero-badge span { color: var(--green); }
+
+    h1 {
+      font-size: clamp(2.2rem, 5vw, 3.5rem);
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      line-height: 1.1;
+      margin-bottom: 16px;
+    }
+
+    h1 em {
+      font-style: normal;
+      background: linear-gradient(90deg, var(--blue), var(--purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero p {
+      color: var(--text-muted);
+      font-size: 1.1rem;
+      max-width: 560px;
+      line-height: 1.6;
+    }
+
+    /* STATS ROW */
+    .stats {
+      display: flex;
+      gap: 32px;
+      margin-top: 40px;
+    }
+
+    .stat {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .stat-num {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--blue);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .stat-label {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    /* MAIN LAYOUT */
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 40px 80px;
+    }
+
+    /* SECTION HEADERS */
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+      padding-top: 48px;
+    }
+
+    .section-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    .icon-blue { background: rgba(88,166,255,0.15); }
+    .icon-green { background: rgba(63,185,80,0.15); }
+    .icon-orange { background: rgba(210,153,34,0.15); }
+
+    .section-header h2 {
+      font-size: 1.4rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .section-header .tag {
+      margin-left: auto;
+      font-size: 0.72rem;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--text-dim);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 3px 10px;
+      border-radius: 4px;
+    }
+
+    /* CARDS GRID */
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 16px;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      transition: border-color 0.2s, transform 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .card:hover {
+      border-color: var(--blue);
+      transform: translateY(-2px);
+    }
+
+    .card:hover::before { opacity: 1; }
+
+    .card-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card p {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    /* CODE BLOCKS */
+    .code-block {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 16px;
+    }
+
+    .code-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 16px;
+      background: var(--surface2);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .code-title {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .code-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--blue);
+    }
+
+    .copy-btn {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 3px 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .copy-btn:hover {
+      color: var(--text);
+      border-color: var(--blue);
+    }
+
+    .copy-btn.copied {
+      color: var(--green);
+      border-color: var(--green);
+    }
+
+    pre {
+      padding: 20px;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      line-height: 1.7;
+      color: #cdd9e5;
+    }
+
+    /* SYNTAX COLORS */
+    .kw { color: #ff7b72; }   /* keywords */
+    .fn { color: #d2a8ff; }   /* functions/cmdlets */
+    .str { color: #a5d6ff; }  /* strings */
+    .cm { color: #7d8590; font-style: italic; }  /* comments */
+    .var { color: #79c0ff; }  /* variables */
+    .num { color: #f2cc60; }  /* numbers */
+
+    /* ALERT BOXES */
+    .alert {
+      display: flex;
+      gap: 12px;
+      padding: 14px 18px;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      line-height: 1.5;
+      margin-bottom: 16px;
+    }
+
+    .alert-tip {
+      background: rgba(63,185,80,0.08);
+      border: 1px solid rgba(63,185,80,0.25);
+      color: #7ee787;
+    }
+
+    .alert-warn {
+      background: rgba(210,153,34,0.08);
+      border: 1px solid rgba(210,153,34,0.25);
+      color: #e3b341;
+    }
+
+    .alert-info {
+      background: rgba(88,166,255,0.08);
+      border: 1px solid rgba(88,166,255,0.25);
+      color: #79c0ff;
+    }
+
+    .alert-icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+
+    /* TABLE */
+    .table-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 16px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.875rem;
+    }
+
+    th {
+      background: var(--surface2);
+      padding: 10px 16px;
+      text-align: left;
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+    }
+
+    td {
+      padding: 12px 16px;
+      border-bottom: 1px solid rgba(48,54,61,0.5);
+      color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+    }
+
+    td:first-child { color: var(--text); font-family: 'Syne', sans-serif; font-size: 0.875rem; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: rgba(88,166,255,0.04); }
+
+    /* DIVIDER */
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 48px 0 0;
+    }
+
+    /* FOOTER */
+    footer {
+      position: relative;
+      z-index: 1;
+      border-top: 1px solid var(--border);
+      padding: 24px 40px;
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--text-dim);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* ANIMATIONS */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .hero { animation: fadeUp 0.5s ease both; }
+    .section-header { animation: fadeUp 0.4s ease both; }
+
+    /* SCROLLBAR */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--text-dim); }
   </style>
 </head>
 <body>
-  <h1>🖥️ IT Docs – M365 & PowerShell</h1>
+
+<!-- HEADER -->
+<header>
+  <div class="logo">
+    <div class="logo-icon">🖥️</div>
+    IT Docs
+  </div>
   <nav>
-    <a href="#m365">M365 Hilfe</a>
-    <a href="#powershell">PowerShell Scripts</a>
+    <a href="#m365" class="active">M365</a>
+    <a href="#powershell">PowerShell</a>
     <a href="#support">IT-Support</a>
   </nav>
+</header>
 
-  <div class="card" id="m365">
-    <h2>📧 M365 Hilfe</h2>
-    <p>Hier kommen M365 Tipps und Anleitungen rein...</p>
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-badge"><span>●</span> Intern | IT Abteilung</div>
+  <h1>M365, PowerShell &<br><em>IT-Support</em> Docs</h1>
+  <p>Interne Dokumentation für häufige IT-Aufgaben, PowerShell-Scripts und M365-Anleitungen.</p>
+  <div class="stats">
+    <div class="stat"><span class="stat-num">12</span><span class="stat-label">Scripts</span></div>
+    <div class="stat"><span class="stat-num">8</span><span class="stat-label">M365 Guides</span></div>
+    <div class="stat"><span class="stat-num">15</span><span class="stat-label">Support FAQs</span></div>
+  </div>
+</section>
+
+<!-- MAIN -->
+<div class="container">
+
+  <!-- ===== M365 ===== -->
+  <div class="section-header" id="m365">
+    <div class="section-icon icon-blue">☁️</div>
+    <h2>Microsoft 365</h2>
+    <span class="tag">Anleitungen</span>
   </div>
 
-  <div class="card" id="powershell">
-    <h2>⚡ PowerShell Scripts</h2>
-    <pre><code># Beispiel: AD Benutzer auflisten
-Get-ADUser -Filter * | Select-Object Name, SamAccountName</code></pre>
+  <div class="cards">
+    <div class="card">
+      <div class="card-title">📧 Shared Mailbox einrichten</div>
+      <p>Exchange Admin Center → Recipients → Mailboxes → + Add shared mailbox. Berechtigungen unter «Mailbox delegation» vergeben (Full Access / Send As).</p>
+    </div>
+    <div class="card">
+      <div class="card-title">👥 Gruppe in Teams erstellen</div>
+      <p>Teams → Teams-Tab → «Join or create a team» → «Create team». Typ wählen (Privat/Öffentlich), Mitglieder hinzufügen, Kanäle strukturieren.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">🔐 MFA aktivieren</div>
+      <p>Entra Admin Center → Users → Per-user MFA oder Conditional Access Policy «Require MFA» für alle oder bestimmte Gruppen.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">📁 SharePoint Berechtigungen</div>
+      <p>Site Settings → Site Permissions → Gruppen anpassen. Vererbung bei Bedarf aufheben («Stop inheriting permissions»).</p>
+    </div>
+    <div class="card">
+      <div class="card-title">📊 Lizenz zuweisen</div>
+      <p>Entra Admin Center → Users → Lizenz auswählen → Apps und Dienste bei Bedarf deaktivieren. Bulk-Zuweisung via PowerShell empfohlen ab 10+ Usern.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">🔄 Postfach-Migration</div>
+      <p>Exchange Admin Center → Migration → + Add migration batch. Typ «Remote move» oder «Cutover» je nach Szenario. Completion manuell triggern.</p>
+    </div>
   </div>
 
-  <div class="card" id="support">
-    <h2>🛠️ IT-Support Hilfen</h2>
-    <p>Häufige Probleme und Lösungen...</p>
+  <!-- ===== POWERSHELL ===== -->
+  <hr class="divider">
+
+  <div class="section-header" id="powershell">
+    <div class="section-icon icon-green">⚡</div>
+    <h2>PowerShell Scripts</h2>
+    <span class="tag">Kopieren & Ausführen</span>
   </div>
+
+  <div class="alert alert-tip">
+    <span class="alert-icon">💡</span>
+    <div>Vor dem Ausführen: <code>Set-ExecutionPolicy RemoteSigned -Scope CurrentUser</code> und Module installieren mit <code>Install-Module ExchangeOnlineManagement</code></div>
+  </div>
+
+  <!-- Script 1 -->
+  <div class="code-block">
+    <div class="code-header">
+      <div class="code-title"><span class="code-dot"></span>AD-Passwort-Ablauf-Check.ps1</div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="cm"># Zeigt alle User deren Passwort in X Tagen abläuft</span>
+<span class="var">$DaysUntilExpiry</span> = <span class="num">14</span>
+
+<span class="fn">Get-ADUser</span> <span class="kw">-Filter</span> * <span class="kw">-Properties</span> PasswordLastSet, PasswordNeverExpires |
+  <span class="fn">Where-Object</span> { <span class="kw">-not</span> <span class="var">$_</span>.PasswordNeverExpires } |
+  <span class="fn">Select-Object</span> Name, SamAccountName,
+    @{ Name=<span class="str">'ExpiresOn'</span>; Expression={ <span class="var">$_</span>.PasswordLastSet.<span class="fn">AddDays</span>(<span class="num">90</span>) } } |
+  <span class="fn">Where-Object</span> { <span class="var">$_</span>.ExpiresOn <span class="kw">-lt</span> (<span class="fn">Get-Date</span>).<span class="fn">AddDays</span>(<span class="var">$DaysUntilExpiry</span>) } |
+  <span class="fn">Sort-Object</span> ExpiresOn |
+  <span class="fn">Format-Table</span> <span class="kw">-AutoSize</span></pre>
+  </div>
+
+  <!-- Script 2 -->
+  <div class="code-block">
+    <div class="code-header">
+      <div class="code-title"><span class="code-dot"></span>M365-Lizenzen-Report.ps1</div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="cm"># Verbindung zu M365</span>
+<span class="fn">Connect-MgGraph</span> <span class="kw">-Scopes</span> <span class="str">"User.Read.All"</span>, <span class="str">"Directory.Read.All"</span>
+
+<span class="cm"># Alle lizenzierten User exportieren</span>
+<span class="fn">Get-MgUser</span> <span class="kw">-All</span> <span class="kw">-Filter</span> <span class="str">"assignedLicenses/`$count ne 0"</span> `
+  <span class="kw">-ConsistencyLevel</span> eventual <span class="kw">-CountVariable</span> <span class="var">$count</span> |
+  <span class="fn">Select-Object</span> DisplayName, UserPrincipalName, AccountEnabled |
+  <span class="fn">Export-Csv</span> <span class="str">"./Lizenzen-Report.csv"</span> <span class="kw">-NoTypeInformation</span> <span class="kw">-Encoding</span> UTF8
+
+<span class="fn">Write-Host</span> <span class="str">"✅ Export fertig: Lizenzen-Report.csv"</span> <span class="kw">-ForegroundColor</span> Green</pre>
+  </div>
+
+  <!-- Script 3 -->
+  <div class="code-block">
+    <div class="code-header">
+      <div class="code-title"><span class="code-dot"></span>Shared-Mailbox-Berechtigungen.ps1</div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="cm"># Shared Mailbox Zugriff vergeben</span>
+<span class="fn">Connect-ExchangeOnline</span>
+
+<span class="var">$Mailbox</span> = <span class="str">"support@firma.ch"</span>
+<span class="var">$User</span>    = <span class="str">"hans.muster@firma.ch"</span>
+
+<span class="cm"># Full Access</span>
+<span class="fn">Add-MailboxPermission</span> <span class="kw">-Identity</span> <span class="var">$Mailbox</span> `
+  <span class="kw">-User</span> <span class="var">$User</span> <span class="kw">-AccessRights</span> FullAccess <span class="kw">-AutoMapping</span> <span class="var">$true</span>
+
+<span class="cm"># Send As</span>
+<span class="fn">Add-RecipientPermission</span> <span class="kw">-Identity</span> <span class="var">$Mailbox</span> `
+  <span class="kw">-Trustee</span> <span class="var">$User</span> <span class="kw">-AccessRights</span> SendAs <span class="kw">-Confirm</span>:<span class="var">$false</span>
+
+<span class="fn">Write-Host</span> <span class="str">"✅ Berechtigungen gesetzt für <span class="var">$User</span>"</span></pre>
+  </div>
+
+  <!-- Script 4 -->
+  <div class="code-block">
+    <div class="code-header">
+      <div class="code-title"><span class="code-dot"></span>Deaktivierter-User-Cleanup.ps1</div>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="cm"># Alle deaktivierten AD-User anzeigen und in OU verschieben</span>
+<span class="var">$ZielOU</span> = <span class="str">"OU=Deaktiviert,DC=firma,DC=ch"</span>
+
+<span class="fn">Get-ADUser</span> <span class="kw">-Filter</span> { Enabled <span class="kw">-eq</span> <span class="var">$false</span> } <span class="kw">-Properties</span> LastLogonDate |
+  <span class="fn">Where-Object</span> { <span class="var">$_</span>.DistinguishedName <span class="kw">-notlike</span> <span class="str">"*Deaktiviert*"</span> } |
+  <span class="fn">ForEach-Object</span> {
+    <span class="fn">Move-ADObject</span> <span class="kw">-Identity</span> <span class="var">$_</span>.DistinguishedName <span class="kw">-TargetPath</span> <span class="var">$ZielOU</span>
+    <span class="fn">Write-Host</span> <span class="str">"Verschoben: <span class="var">$($_.Name)</span>"</span>
+  }</pre>
+  </div>
+
+  <!-- ===== IT SUPPORT ===== -->
+  <hr class="divider">
+
+  <div class="section-header" id="support">
+    <div class="section-icon icon-orange">🛠️</div>
+    <h2>IT-Support Hilfen</h2>
+    <span class="tag">Häufige Probleme</span>
+  </div>
+
+  <div class="alert alert-warn">
+    <span class="alert-icon">⚠️</span>
+    <div>Vor Änderungen an produktiven Systemen immer zuerst in der Testumgebung testen und ein Backup erstellen.</div>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Problem</th>
+          <th>Ursache</th>
+          <th>Lösung</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Outlook startet nicht</td>
+          <td>Defektes Profil</td>
+          <td><code>outlook.exe /resetnavpane</code></td>
+        </tr>
+        <tr>
+          <td>OneDrive Sync hängt</td>
+          <td>Locked Files</td>
+          <td>OneDrive beenden → Taskmanager → Neu starten</td>
+        </tr>
+        <tr>
+          <td>MFA-Code kommt nicht</td>
+          <td>Falsche Authenticator-App</td>
+          <td>Entra → User → MFA zurücksetzen</td>
+        </tr>
+        <tr>
+          <td>Teams-Meetings ohne Audio</td>
+          <td>Standard-Audiogerät</td>
+          <td>Teams → Settings → Devices → richtiges Gerät</td>
+        </tr>
+        <tr>
+          <td>Drucker offline</td>
+          <td>Spooler-Dienst</td>
+          <td><code>Restart-Service Spooler</code></td>
+        </tr>
+        <tr>
+          <td>VPN verbindet nicht</td>
+          <td>DNS-Cache</td>
+          <td><code>ipconfig /flushdns</code> dann neu verbinden</td>
+        </tr>
+        <tr>
+          <td>Login-Loop nach Passwortänderung</td>
+          <td>Cached Credentials</td>
+          <td>Credential Manager → alte Einträge löschen</td>
+        </tr>
+        <tr>
+          <td>SharePoint Zugriff verweigert</td>
+          <td>Gruppe fehlt</td>
+          <td>Entra → Gruppe prüfen → User hinzufügen</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="alert alert-info">
+    <span class="alert-icon">ℹ️</span>
+    <div>Für komplexe Probleme: Ticket in ServiceDesk erstellen mit Screenshot, Fehlermeldung und Zeitpunkt des Auftretens.</div>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<footer>
+  IT Docs · Intern · Zuletzt aktualisiert: <span id="date"></span>
+</footer>
+
+<script>
+  // Datum
+  document.getElementById('date').textContent =
+    new Date().toLocaleDateString('de-CH', { year:'numeric', month:'long', day:'numeric' });
+
+  // Copy Buttons
+  function copyCode(btn) {
+    const pre = btn.closest('.code-block').querySelector('pre');
+    const text = pre.innerText;
+    navigator.clipboard.writeText(text).then(() => {
+      btn.textContent = 'Copied ✓';
+      btn.classList.add('copied');
+      setTimeout(() => {
+        btn.textContent = 'Copy';
+        btn.classList.remove('copied');
+      }, 2000);
+    });
+  }
+
+  // Smooth scroll nav highlight
+  const sections = document.querySelectorAll('[id]');
+  const navLinks = document.querySelectorAll('nav a');
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(s => {
+      if (window.scrollY >= s.offsetTop - 100) current = s.id;
+    });
+    navLinks.forEach(a => {
+      a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+    });
+  });
+</script>
+
 </body>
 </html>
