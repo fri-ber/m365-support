@@ -1,34 +1,523 @@
----
-layout: default
-title: Start
-is_home: true
----
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>M365 & IT Docs</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:        #0d1117;
+      --surface:   #161b22;
+      --surface2:  #1c2330;
+      --border:    #30363d;
+      --blue:      #58a6ff;
+      --blue-dim:  #1f4068;
+      --green:     #3fb950;
+      --purple:    #bc8cff;
+      --text:      #e6edf3;
+      --muted:     #7d8590;
+      --dim:       #484f58;
+    }
 
-<div class="home-wrap">
-  <div class="home-badge"><span>●</span>&nbsp; GitHub Pages · IT Dokumentation</div>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
-  <h1>Meine IT-Docs —<br><em>gesammelt & geteilt</em></h1>
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
 
-  <p class="home-intro">
-    Strukturierte Dokumentation rund um Microsoft 365, PowerShell-Scripting
-    und IT-Support — server-seitig gerendert via Jekyll auf GitHub Pages.
-  </p>
+    /* ── subtle dot grid ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: radial-gradient(circle, rgba(88,166,255,0.06) 1px, transparent 1px);
+      background-size: 28px 28px;
+      pointer-events: none;
+      z-index: 0;
+    }
 
-  <div class="home-cards">
-    <a href="{{ site.baseurl }}/docs/m365.html" class="home-card c-blue">
-      <div class="home-card-icon">☁️</div>
-      <div class="home-card-title">Microsoft 365</div>
-      <div class="home-card-desc">Shared Mailbox, MFA, Lizenzen, SharePoint, Teams</div>
+    /* ════════════════════════════════
+       HEADER
+    ════════════════════════════════ */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(13,17,23,0.92);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .header-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 32px;
+      height: 62px;
+      display: flex;
+      align-items: center;
+      gap: 40px;
+    }
+
+    /* Logo */
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: var(--text);
+      font-weight: 700;
+      font-size: 1rem;
+      letter-spacing: -0.01em;
+      flex-shrink: 0;
+    }
+
+    .logo-mark {
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
+      background: linear-gradient(135deg, var(--blue) 0%, var(--purple) 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 17px;
+      flex-shrink: 0;
+      box-shadow: 0 0 16px rgba(88,166,255,0.25);
+    }
+
+    /* Nav */
+    nav {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      flex: 1;
+    }
+
+    nav a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.875rem;
+      font-weight: 500;
+      padding: 6px 13px;
+      border-radius: 7px;
+      transition: color 0.15s, background 0.15s;
+      white-space: nowrap;
+    }
+
+    nav a:hover {
+      color: var(--text);
+      background: var(--surface);
+    }
+
+    nav a.active {
+      color: var(--blue);
+      background: var(--blue-dim);
+    }
+
+    /* Header right */
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-left: auto;
+      flex-shrink: 0;
+    }
+
+    .gh-link {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 0.8rem;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--muted);
+      text-decoration: none;
+      border: 1px solid var(--border);
+      padding: 5px 12px;
+      border-radius: 7px;
+      transition: color 0.15s, border-color 0.15s;
+    }
+
+    .gh-link:hover {
+      color: var(--text);
+      border-color: var(--blue);
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--green);
+      animation: pulse 2.4s ease-in-out infinite;
+      flex-shrink: 0;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.4; }
+    }
+
+    /* ════════════════════════════════
+       MAIN / CONTENT AREA
+    ════════════════════════════════ */
+    main {
+      position: relative;
+      z-index: 1;
+      flex: 1;
+      max-width: 1100px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 64px 32px;
+    }
+
+    /* — placeholder content — */
+    .placeholder {
+      text-align: center;
+      padding: 80px 20px;
+    }
+
+    .placeholder-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 5px 16px;
+      font-size: 0.75rem;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--muted);
+      margin-bottom: 28px;
+    }
+
+    .placeholder h1 {
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+      margin-bottom: 18px;
+    }
+
+    .placeholder h1 span {
+      background: linear-gradient(90deg, var(--blue), var(--purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .placeholder p {
+      color: var(--muted);
+      font-size: 1.05rem;
+      max-width: 520px;
+      margin: 0 auto 40px;
+      line-height: 1.65;
+    }
+
+    .pill-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+    }
+
+    .pill {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 8px 16px;
+      font-size: 0.82rem;
+      color: var(--muted);
+      font-family: 'JetBrains Mono', monospace;
+      transition: border-color 0.2s, color 0.2s;
+    }
+
+    .pill:hover {
+      border-color: var(--blue);
+      color: var(--blue);
+    }
+
+    /* ════════════════════════════════
+       FOOTER
+    ════════════════════════════════ */
+    footer {
+      position: relative;
+      z-index: 1;
+      border-top: 1px solid var(--border);
+      background: rgba(22,27,34,0.7);
+    }
+
+    .footer-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 32px;
+    }
+
+    /* Footer top */
+    .footer-top {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr 1fr 1fr;
+      gap: 40px;
+      padding: 44px 0 36px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .footer-brand .logo {
+      margin-bottom: 12px;
+      display: inline-flex;
+    }
+
+    .footer-brand p {
+      font-size: 0.82rem;
+      color: var(--muted);
+      line-height: 1.6;
+      max-width: 240px;
+    }
+
+    .footer-col h4 {
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--dim);
+      margin-bottom: 14px;
+    }
+
+    .footer-col ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .footer-col ul li a {
+      font-size: 0.84rem;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+
+    .footer-col ul li a:hover {
+      color: var(--blue);
+    }
+
+    /* Footer bottom */
+    .footer-bottom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 0;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .footer-copy {
+      font-size: 0.78rem;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--dim);
+    }
+
+    .footer-copy a {
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+
+    .footer-copy a:hover { color: var(--blue); }
+
+    .footer-tags {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .footer-tag {
+      font-size: 0.7rem;
+      font-family: 'JetBrains Mono', monospace;
+      padding: 2px 9px;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+      color: var(--dim);
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 768px) {
+      .header-inner { gap: 20px; padding: 0 20px; }
+      nav a span { display: none; }
+
+      .footer-top {
+        grid-template-columns: 1fr 1fr;
+        gap: 28px;
+        padding: 32px 0 24px;
+      }
+
+      .footer-brand { grid-column: 1 / -1; }
+
+      main { padding: 40px 20px; }
+      .footer-inner { padding: 0 20px; }
+    }
+
+    @media (max-width: 480px) {
+      .footer-top { grid-template-columns: 1fr; }
+      .gh-link span { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════
+     HEADER
+════════════════════════════════════ -->
+<header>
+  <div class="header-inner">
+
+    <a href="index.html" class="logo">
+      <div class="logo-mark">🖥️</div>
+      IT&nbsp;Docs
     </a>
-    <a href="{{ site.baseurl }}/docs/powershell.html" class="home-card c-green">
-      <div class="home-card-icon">⚡</div>
-      <div class="home-card-title">PowerShell</div>
-      <div class="home-card-desc">AD User Management, Exchange Online, Graph API, Snippets</div>
-    </a>
-    <a href="{{ site.baseurl }}/docs/support.html" class="home-card c-orange">
-      <div class="home-card-icon">🛠️</div>
-      <div class="home-card-title">IT-Support FAQ</div>
-      <div class="home-card-desc">Outlook, OneDrive, Teams, MFA, VPN, Drucker-Probleme</div>
-    </a>
+
+    <nav>
+      <a href="index.html#m365">☁️ M365</a>
+      <a href="index.html#powershell">⚡ PowerShell</a>
+      <a href="index.html#support">🛠️ IT-Support</a>
+      <a href="index-new.html" class="active">✨ New</a>
+    </nav>
+
+    <div class="header-right">
+      <div class="status-dot" title="Live auf GitHub Pages"></div>
+      <a class="gh-link" href="https://github.com" target="_blank" rel="noopener">
+        <!-- GitHub Icon -->
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+          <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38
+          0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52
+          -.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2
+          -3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82
+          .64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08
+          2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01
+          1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
+        </svg>
+        <span>GitHub</span>
+      </a>
+    </div>
+
   </div>
-</div>
+</header>
+
+
+<!-- ════════════════════════════════════
+     MAIN CONTENT
+════════════════════════════════════ -->
+<main>
+  <div class="placeholder">
+    <div class="placeholder-badge">
+      <span style="color: var(--green);">●</span>&nbsp;
+      GitHub Pages · Dokumentation
+    </div>
+
+    <h1>
+      Meine IT-Docs,<br>
+      <span>gesammelt & geteilt</span>
+    </h1>
+
+    <p>
+      Hier entsteht eine strukturierte Dokumentation rund um
+      Microsoft 365, PowerShell-Scripting und IT-Support —
+      offen zugänglich über GitHub Pages.
+    </p>
+
+    <div class="pill-group">
+      <div class="pill">☁️ Microsoft 365</div>
+      <div class="pill">⚡ PowerShell</div>
+      <div class="pill">🛠️ IT-Support</div>
+      <div class="pill">🔐 Entra ID / AAD</div>
+      <div class="pill">📧 Exchange Online</div>
+      <div class="pill">🔄 Intune / Endpoint</div>
+    </div>
+  </div>
+</main>
+
+
+<!-- ════════════════════════════════════
+     FOOTER
+════════════════════════════════════ -->
+<footer>
+  <div class="footer-inner">
+
+    <!-- Top section: brand + links -->
+    <div class="footer-top">
+
+      <div class="footer-brand">
+        <a href="index.html" class="logo">
+          <div class="logo-mark">🖥️</div>
+          IT&nbsp;Docs
+        </a>
+        <p>
+          Persönliche IT-Dokumentation für M365,
+          PowerShell &amp; Support — veröffentlicht über GitHub Pages.
+        </p>
+      </div>
+
+      <div class="footer-col">
+        <h4>Microsoft 365</h4>
+        <ul>
+          <li><a href="index.html#m365">Shared Mailbox</a></li>
+          <li><a href="index.html#m365">Teams Gruppen</a></li>
+          <li><a href="index.html#m365">MFA / Entra ID</a></li>
+          <li><a href="index.html#m365">SharePoint</a></li>
+          <li><a href="index.html#m365">Lizenzen</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>PowerShell</h4>
+        <ul>
+          <li><a href="index.html#powershell">AD User Mgmt</a></li>
+          <li><a href="index.html#powershell">Exchange Online</a></li>
+          <li><a href="index.html#powershell">MS Graph API</a></li>
+          <li><a href="index.html#powershell">Lizenz Report</a></li>
+          <li><a href="index.html#powershell">User Cleanup</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>IT-Support</h4>
+        <ul>
+          <li><a href="index.html#support">Outlook Fixes</a></li>
+          <li><a href="index.html#support">OneDrive Sync</a></li>
+          <li><a href="index.html#support">MFA Probleme</a></li>
+          <li><a href="index.html#support">Teams Audio</a></li>
+          <li><a href="index.html#support">VPN / DNS</a></li>
+        </ul>
+      </div>
+
+    </div>
+
+    <!-- Bottom bar -->
+    <div class="footer-bottom">
+      <span class="footer-copy">
+        © <span id="year"></span> IT Docs ·
+        Powered by <a href="https://pages.github.com" target="_blank" rel="noopener">GitHub Pages</a>
+      </span>
+
+      <div class="footer-tags">
+        <span class="footer-tag">M365</span>
+        <span class="footer-tag">PowerShell</span>
+        <span class="footer-tag">IT-Support</span>
+        <span class="footer-tag">Entra ID</span>
+      </div>
+    </div>
+
+  </div>
+</footer>
+
+<script>
+  document.getElementById('year').textContent = new Date().getFullYear();
+</script>
+
+</body>
+</html>
